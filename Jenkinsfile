@@ -1,12 +1,16 @@
 pipeline {
     agent any
+    environment {
+        // Extend the PATH variable correctly using +EXTRA syntax
+        PATH+EXTRA = "/Users/vibha/.rbenv/bin:/Users/vibha/.rbenv/shims"
+    }
 
     stages {
         stage('Verify rbenv Installation') {
             steps {
                 script {
                     sh '''
-                        echo "Checking rbenv installation..."
+                        echo "Step 1: Checking rbenv installation..."
                         which rbenv || echo "rbenv not found"
                         rbenv root || echo "rbenv root not found"
                     '''
@@ -18,8 +22,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Verifying Ruby version managed by rbenv..."
-                        export PATH="$HOME/.rbenv/bin:$PATH"
+                        echo "Step 2: Verifying Ruby version managed by rbenv..."
                         eval "$(rbenv init -)"
                         rbenv global 3.1.0
 
@@ -40,7 +43,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Environment Variables:"
+                        echo "Step 3: Printing Environment Variables..."
                         env | grep -E 'RBENV|PATH'
                     '''
                 }
