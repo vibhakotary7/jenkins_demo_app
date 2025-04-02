@@ -12,6 +12,9 @@ pipeline {
                         echo "Step 2: Checking rbenv installation..."
                         which rbenv || echo "rbenv not found"
                         rbenv root || echo "rbenv root not found"
+
+                        echo "Step 3: Rehashing rbenv..."
+                        rbenv rehash || echo "rbenv rehash failed"
                     '''
                 }
             }
@@ -21,7 +24,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Step 3: Verifying Ruby version managed by rbenv..."
+                        echo "Step 4: Verifying Ruby version managed by rbenv..."
                         source ~/jenkins_env.sh
                         rbenv global 3.1.0
 
@@ -42,7 +45,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Step 4: Printing Environment Variables..."
+                        echo "Step 5: Printing Environment Variables..."
                         env | grep -E 'RBENV|PATH'
                     '''
                 }
