@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        // Extend the PATH variable correctly using +EXTRA syntax
-        PATH+EXTRA = "/Users/vibha/.rbenv/bin:/Users/vibha/.rbenv/shims"
+        // Correctly concatenate the PATH with additional directories
+        PATH = "/Users/vibha/.rbenv/bin:/Users/vibha/.rbenv/shims:${env.PATH}"
     }
 
     stages {
