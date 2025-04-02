@@ -2,50 +2,47 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/vibhakotary7/jenkins_demo_app.git'
-            }
-        }
-
-        stage('Install Dependencies') {
+        stage('Verify rbenv Installation') {
             steps {
                 script {
-                    // Set the correct Ruby version using rbenv or RVM
                     sh '''
-                        export PATH="$HOME/.rbenv/bin:$PATH"
-                        if command -v rbenv >/dev/null; then
-                            eval "$(rbenv init -)"
-                        fi
-                        ruby -v
-                        gem update --system
-                        gem install bundler
-                        bundle install
+                        echo "Checking rbenv installation..."
+                        which rbenv || echo "rbenv not found"
+                        rbenv root || echo "rbenv root not found"
                     '''
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Verify Ruby Version') {
             steps {
                 script {
-                    sh 'bundle exec rake test'
+                    sh '''
+                        echo "Verifying Ruby version managed by rbenv..."
+                        export PATH="$HOME/.rbenv/bin:$PATH"
+                        eval "$(rbenv init -)"
+                        rbenv global 3.1.0
+
+                        echo "Ruby version:"
+                        ruby -v
+
+                        echo "List of installed Ruby versions:"
+                        rbenv versions
+
+                        echo "Active Ruby version path:"
+                        rbenv which ruby
+                    '''
                 }
             }
         }
 
-        stage('Build') {
+        stage('Verify Environment Variables') {
             steps {
                 script {
-                    sh 'bundle exec rake build'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    sh 'bundle exec rake deploy'
+                    sh '''
+                        echo "Environment Variables:"
+                        env | grep -E 'RBENV|PATH'
+                    '''
                 }
             }
         }
@@ -53,14 +50,14 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up workspace...'
+            echo 'Verification completed.'
             cleanWs()
         }
         success {
-            echo 'Build and Deployment Successful!'
+            echo 'rbenv and Ruby version successfully configured!'
         }
         failure {
-            echo 'Build Failed!'
+            echo 'rbenv or Ruby configuration failed. Check the logs.'
         }
     }
 }
