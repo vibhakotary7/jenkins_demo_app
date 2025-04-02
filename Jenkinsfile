@@ -11,10 +11,15 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install compatible bundler version
+                    // Set the correct Ruby version using rbenv or RVM
                     sh '''
+                        export PATH="$HOME/.rbenv/bin:$PATH"
+                        if command -v rbenv >/dev/null; then
+                            eval "$(rbenv init -)"
+                        fi
                         ruby -v
-                        gem install bundler -v 2.4.22
+                        gem update --system
+                        gem install bundler
                         bundle install
                     '''
                 }
