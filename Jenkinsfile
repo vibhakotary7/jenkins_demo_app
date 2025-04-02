@@ -7,7 +7,6 @@ pipeline {
                 script {
                     sh '''
                         echo "Step 1: Loading custom environment for Jenkins..."
-                        # Source the clean environment file created for Jenkins
                         source ~/jenkins_env.sh
 
                         echo "Step 2: Checking rbenv installation..."
