@@ -7,6 +7,12 @@ pipeline {
                 script {
                     sh '''
                         echo "Step 1: Checking rbenv installation..."
+                        # Explicitly source the environment to make sure rbenv is loaded
+                        if [ -f ~/.bash_profile ]; then
+                            source ~/.bash_profile
+                        elif [ -f ~/.zshrc ]; then
+                            source ~/.zshrc
+                        fi
                         export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
                         eval "$(rbenv init -)"
                         which rbenv || echo "rbenv not found"
@@ -21,6 +27,11 @@ pipeline {
                 script {
                     sh '''
                         echo "Step 2: Verifying Ruby version managed by rbenv..."
+                        if [ -f ~/.bash_profile ]; then
+                            source ~/.bash_profile
+                        elif [ -f ~/.zshrc ]; then
+                            source ~/.zshrc
+                        fi
                         export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
                         eval "$(rbenv init -)"
                         rbenv global 3.1.0
