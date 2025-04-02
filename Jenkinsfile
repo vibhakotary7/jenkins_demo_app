@@ -11,10 +11,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Explicitly load RVM and use the correct Ruby version
+                    // Install compatible bundler version
                     sh '''
-                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
-                        rvm use 2.6.10 --default
+                        ruby -v
                         gem install bundler -v 2.4.22
                         bundle install
                     '''
@@ -25,11 +24,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh '''
-                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
-                        rvm use 2.6.10
-                        bundle exec rake test
-                    '''
+                    sh 'bundle exec rake test'
                 }
             }
         }
@@ -37,11 +32,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh '''
-                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
-                        rvm use 2.6.10
-                        bundle exec rake build
-                    '''
+                    sh 'bundle exec rake build'
                 }
             }
         }
@@ -49,11 +40,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh '''
-                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
-                        rvm use 2.6.10
-                        bundle exec rake deploy
-                    '''
+                    sh 'bundle exec rake deploy'
                 }
             }
         }
