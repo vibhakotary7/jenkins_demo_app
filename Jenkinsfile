@@ -6,15 +6,11 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Step 1: Checking rbenv installation..."
-                        # Explicitly source the environment to make sure rbenv is loaded
-                        if [ -f ~/.bash_profile ]; then
-                            source ~/.bash_profile
-                        elif [ -f ~/.zshrc ]; then
-                            source ~/.zshrc
-                        fi
-                        export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-                        eval "$(rbenv init -)"
+                        echo "Step 1: Loading custom environment for Jenkins..."
+                        # Source the clean environment file created for Jenkins
+                        source ~/jenkins_env.sh
+
+                        echo "Step 2: Checking rbenv installation..."
                         which rbenv || echo "rbenv not found"
                         rbenv root || echo "rbenv root not found"
                     '''
@@ -26,14 +22,8 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Step 2: Verifying Ruby version managed by rbenv..."
-                        if [ -f ~/.bash_profile ]; then
-                            source ~/.bash_profile
-                        elif [ -f ~/.zshrc ]; then
-                            source ~/.zshrc
-                        fi
-                        export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-                        eval "$(rbenv init -)"
+                        echo "Step 3: Verifying Ruby version managed by rbenv..."
+                        source ~/jenkins_env.sh
                         rbenv global 3.1.0
 
                         echo "Ruby version:"
@@ -53,7 +43,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Step 3: Printing Environment Variables..."
+                        echo "Step 4: Printing Environment Variables..."
                         env | grep -E 'RBENV|PATH'
                     '''
                 }
