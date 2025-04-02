@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        // Correctly concatenate the PATH with additional directories
-        PATH = "/Users/vibha/.rbenv/bin:/Users/vibha/.rbenv/shims:${env.PATH}"
-    }
 
     stages {
         stage('Verify rbenv Installation') {
@@ -11,6 +7,8 @@ pipeline {
                 script {
                     sh '''
                         echo "Step 1: Checking rbenv installation..."
+                        export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+                        eval "$(rbenv init -)"
                         which rbenv || echo "rbenv not found"
                         rbenv root || echo "rbenv root not found"
                     '''
@@ -23,6 +21,7 @@ pipeline {
                 script {
                     sh '''
                         echo "Step 2: Verifying Ruby version managed by rbenv..."
+                        export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
                         eval "$(rbenv init -)"
                         rbenv global 3.1.0
 
