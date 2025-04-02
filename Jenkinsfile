@@ -1,40 +1,74 @@
 pipeline {
     agent any
 
-    environment {
-        RAILS_ENV = 'test'
-    }
-
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git 'https://github.com/vibhakotary7/jenkins_demo_app.git'
+                git url: 'https://github.com/vibhakotary7/jenkins_demo_app.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'gem install bundler'
-                sh 'bundle install'
+                script {
+                    // Explicitly load RVM and use the correct Ruby version
+                    sh '''
+                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
+                        rvm use 2.6.10 --default
+                        gem install bundler -v 2.4.22
+                        bundle install
+                    '''
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'rails test'
+                script {
+                    sh '''
+                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
+                        rvm use 2.6.10
+                        bundle exec rake test
+                    '''
+                }
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the Rails application...'
+                script {
+                    sh '''
+                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
+                        rvm use 2.6.10
+                        bundle exec rake build
+                    '''
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying the application...'
+                script {
+                    sh '''
+                        source /usr/local/rvm/scripts/rvm || source ~/.rvm/scripts/rvm
+                        rvm use 2.6.10
+                        bundle exec rake deploy
+                    '''
+                }
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            cleanWs()
+        }
+        success {
+            echo 'Build and Deployment Successful!'
+        }
+        failure {
+            echo 'Build Failed!'
         }
     }
 }
